@@ -1,0 +1,208 @@
+#include <iostream>
+#include <cmath>
+#include <string>
+#include <sstream>
+#include <map>
+
+class Calculator {
+private:
+    std::map<std::string, double> memory;
+    int memoryIndex;
+
+public:
+    Calculator() : memoryIndex(1) {
+        memory["M1"] = 0;
+        memory["M2"] = 0;
+        memory["M3"] = 0;
+    }
+
+    double add(double a, double b) { return a + b; }
+    double subtract(double a, double b) { return a - b; }
+    double multiply(double a, double b) { return a * b; }
+    double divide(double a, double b) { 
+        if (b != 0) return a / b; 
+        throw std::invalid_argument("Division by zero");
+    }
+
+    double sin(double x) { return std::sin(x); }
+    double cos(double x) { return std::cos(x); }
+    double tan(double x) { return std::tan(x); }
+    
+    double asin(double x) { return std::asin(x); }
+    double acos(double x) { return std::acos(x); }
+    double atan(double x) { return std::atan(x); }
+
+    double log10(double x) { 
+        if (x > 0) return std::log10(x); 
+        throw std::invalid_argument("Logarithm of non-positive number");
+    }
+    
+    double ln(double x) {
+        if (x > 0) return std::log(x);
+        throw std::invalid_argument("Logarithm of non-positive number");
+    }
+
+    double exp(double x) { return std::exp(x); }
+
+    double power(double base, double exponent) { return std::pow(base, exponent); }
+    
+    //Метод сохранения данных в память
+    void saveToMemory(int index, double value) {
+        //Проверяем, что необходимая ячейка существует
+        if (index >= 1 && index <= 3) {
+            memory["M" + std::to_string(index)] = value;
+        } else {
+            throw std::invalid_argument("Неверный индекс");
+        }
+    }
+
+    //Метод, который возвращает данные из необходимой ячейки
+    double recallFromMemory(int index) {
+        if (index >= 1 && index <= 3) {
+            return memory["M" + std::to_string(index)];
+        } else {
+            throw std::invalid_argument("Invalid memory index");
+        }
+    }
+};
+
+int main() {
+    Calculator calc;
+
+    while (true) {
+        std::cout << "\nКалькулятор\n";
+        std::cout << "1. Арифметические операции\n";
+        std::cout << "2. Тригонометрические функции\n";
+        std::cout << "3. Логарифмические функции\n";
+        std::cout << "4. Экспоненциальные функции\n";
+        std::cout << "5. Сохранить в память\n";
+        std::cout << "6. Выход\n";
+        
+        int choice;
+        std::cout << "Выберите опцию: ";
+        std::cin >> choice;
+        
+        if (choice == 6) break;
+
+        switch (choice) {
+            case 1: {
+                
+                int temp;
+                std::cout << "Использовать память (1 - да, 2 - нет) ";
+                std::cin >> temp;
+                
+                if(temp == 1){
+                     double a, b;
+                char op;
+                std::cout <<"Введите выражение (a op Memory[b]): ";
+                std::cin >> a >> op >> b;
+
+                try {
+                    switch (op) {
+                        case '+': std::cout << "Результат: " << calc.add(a, calc.recallFromMemory(b)) << std::endl; break;
+                        case '-': std::cout << "Результат: " << calc.subtract(a, calc.recallFromMemory(b)) << std::endl; break;
+                        case '*': std::cout << "Результат: " << calc.multiply(a, calc.recallFromMemory(b)) << std::endl; break;
+                        case '/': std::cout << "Результат: " << calc.divide(a, calc.recallFromMemory(b)) << std::endl; break;
+                        default: std::cerr << "Неизвестная операция!" << std::endl; break;
+                    }
+                } catch (const std::exception& e) {
+                    std::cerr << "Ошибка: " << e.what() << std::endl;
+                }
+                break;
+                }
+                
+                else {
+                     double a, b;
+                char op;
+                std::cout << "Введите выражение (a op memory[b] (1-3)): ";
+                std::cin >> a >> op >> b;
+
+                try {
+                    switch (op) {
+                        case '+': std::cout << "Результат: " << calc.add(a, b) << std::endl; break;
+                        case '-': std::cout << "Результат: " << calc.subtract(a, b) << std::endl; break;
+                        case '*': std::cout << "Результат: " << calc.multiply(a, b) << std::endl; break;
+                        case '/': std::cout << "Результат: " << calc.divide(a, b) << std::endl; break;
+                        default: std::cerr << "Неизвестная операция!" << std::endl; break;
+                    }
+                } catch (const std::exception& e) {
+                    std::cerr << "Ошибка: " << e.what() << std::endl;
+                }
+                break;
+                }
+            }
+            case 2: {
+                double x;
+                char func;
+                std::cout << "Введите функцию (s - синус, c - косинус, t - тангенс): ";
+                std::cin >> func;
+                std::cout << "Введите значение: ";
+                std::cin >> x;
+
+                try {
+                    switch (func) {
+                        case 's': std::cout << "Результат: " << calc.sin(x) << std::endl; break;
+                        case 'c': std::cout << "Результат: " << calc.cos(x) << std::endl; break;
+                        case 't': std::cout << "Результат: " << calc.tan(x) << std::endl; break;
+                        default: std::cerr << "Неизвестная функция!" << std::endl; break;
+                    }
+                } catch (const std::exception& e) {
+                    std::cerr << "Ошибка: " << e.what() << std::endl;
+                }
+                break;
+            }
+            case 3: {
+                double x;
+                char func;
+                std::cout << "Введите функцию (l - логарифм по основанию 10, n - натуральный логарифм): ";
+                std::cin >> func;
+                std::cout << "Введите значение: ";
+                std::cin >> x;
+
+                try {
+                    switch (func) {
+                        case 'l': std::cout << "Результат: " << calc.log10(x) << std::endl; break;
+                        case 'n': std::cout << "Результат: " << calc.ln(x) << std::endl; break;
+                        default: std::cerr << "Неизвестная функция!" << std::endl; break;
+                    }
+                } catch (const std::exception& e) {
+                    std::cerr << "Ошибка: " << e.what() << std::endl;
+                }
+                break;
+            }
+            case 4: {
+                double x;
+                char func;
+                std::cout << "Введите функцию (e - экспонента): ";
+                std::cin >> func;
+
+                if (func == 'e') {
+                    std::cout << "Введите значение: ";
+                    std::cin >> x;
+                    std::cout << "Результат: " << calc.exp(x) << std::endl;
+                } else {
+                    std::cerr << "Неизвестная функция!" << std::endl;
+                }
+                break;
+            }
+            case 5: {
+                int index;
+                double value;
+
+                std::cout << "Введите индекс памяти (1-3): ";
+                std::cin >> index;
+                std::cout << "Введите значение для сохранения: ";
+                std::cin >> value;
+
+                try {
+                    calc.saveToMemory(index, value);
+                    std::cout << "Сохранено!" << std::endl;
+                } catch (const std::exception& e) {
+                    std::cerr << "Ошибка: " << e.what() << std::endl;
+                }
+            }
+        }
+    }
+
+    return 0;
+}
